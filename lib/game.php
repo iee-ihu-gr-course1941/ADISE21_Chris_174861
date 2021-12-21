@@ -86,4 +86,16 @@ function read_status() {
 	$status = $res->fetch_assoc();
 	return($status);
 }
+
+function update_turn() {
+	$color = read_status()['player_turn'];
+	$other_color = ($color == 'w') ? 'b' : 'w';
+
+	global $mysqli;
+	$sql = 'update game_status set player_turn=?';
+	$st = $mysqli->prepare($sql);
+	$st->bind_param('s', $other_color);
+	$st->execute();
+}
+
 ?>
