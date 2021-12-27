@@ -62,15 +62,12 @@ function handle_piece_impl($input) {
 	if ($color == null) bad_request("You are not a player of this game");
 
 	$status = read_status();
+
 	if ($status['status'] != 'started') bad_request("Game is not in action");
 	if ($status['player_turn'] != $color) bad_request("It is not your turn");
-	if ($status['elimination'] == 1 && $input['piece'] != 'eliminate') bad_request("This round is an elimination");
-	if (pieces_placed($token) != 9 && $input['piece'] == 'move') bad_request("Place all your pieces first");
-
-	if ($input['piece'] == 'place') place_piece($input);
-	else if ($input['piece'] == 'move') move_piece($input);
-	else if ($input['piece'] == 'eliminate') eliminate_piece($input);
-	else bad_request('Choose an action, such as piece place, piece eliminate etc');
+	if ($status['elimination'] == 1) eliminate_piece($input);
+	else if (pieces_placed($token) != 9) place_piece($input);
+	else move_piece($input);
 }
 
 function move_piece($input) {
@@ -88,8 +85,7 @@ function move_piece($input) {
 	if ($board[$x1*7+$y1]['piece_color'] != current_color($input['token'])) bad_request("Not your piece to move or there is no piece at this position to move");
 
 	$token = $input['token'];
-	if (! can_fly($token))
-		if (! can_move($x1, $y1, $x2, $y2)) bad_request("You can't move there");
+	if (! can_fly($token) && ! can_move($x1, $y1, $x2, $y2)) bad_request("You can't move there");
 
 	global $mysqli;
 	$sql = 'call move_piece(?,?,?,?)';
@@ -97,7 +93,7 @@ function move_piece($input) {
 	$st->bind_param('iiii', $x1, $y1, $x2, $y2);
 	$st->execute();
 
-	elimination_check($board, current_color($input['token']));
+	elimination_check(current_color($input['token']), $x2, $y2);
 }
 
 function place_piece($input) {
@@ -118,11 +114,12 @@ function place_piece($input) {
 	$st->bind_param('iiis', $x, $y, $pieces_placed, $token);
 	$st->execute();
 
-	elimination_check($board, current_color($token));
+	elimination_check(current_color($token), $x, $y);
 }
 
 function eliminate_piece($input) {
-	$color = current_color($input['token']);
+	$token = $input['token'];
+	$color = current_color($token);
 	$other_color = $color == 'w' ? 'b' : 'w';
 
 	$x = $input['x'];
@@ -132,28 +129,32 @@ function eliminate_piece($input) {
 	if (get_board()[$x*7+$y]['piece_color'] != $other_color) bad_request("Invalid position to eliminate");
 
 	global $mysqli;
-	$sql = 'call eliminate_piece(?,?)';
+	$sql = 'call eliminate_piece(?,?,?)';
 	$st = $mysqli->prepare($sql);
-	$st->bind_param('ii', $x, $y);
+	$st->bind_param('iis', $x, $y, $input['token']);
 	$st->execute();
 
 	// If the opponent has only three pieces remaining, then the opponent can fly
-	if (show_user($other_color)['pieces_remaining'] == 3) {
+	if (pieces_remaining($token) == 3) {
 		$sql = "update players set can_fly=1 where token=?";
 		$st = $mysqli->prepare($sql);
 		$st->bind_param('s', $input['token']);
 		$st->execute();
 	}
 	// If the opponent has only two pieces remaining the game ends
-	if (show_user($other_color)['pieces_remaining'] == 2) {
-		$sql = "update game_status set status='not_active', result=?, player_turn=null";
+	else if (pieces_remaining($token) == 2) {
+		$sql = "update game_status set status='ended', result=?, player_turn=null";
 		$st = $mysqli->prepare($sql);
 		$st->bind_param('s', $color);
 		$st->execute();
 	}
+
+	update_turn();
 }
 
-function elimination_check($board, $color) {
+function elimination_check($color, $x, $y) {
+	$board = get_board();
+
 	$lines = array(
 		[[0,0],[0,3],[0,6]],
 		[[0,0],[3,0],[6,0]],
@@ -185,9 +186,15 @@ function elimination_check($board, $color) {
 		$x3 = $lines[$i][2][0];
 		$y3 = $lines[$i][2][1];
 
+		// If a line has 3 pieces of the same color and the coordinates
+		// of the piece we just placed is part of this line, then we have formed
+		// a new line, so the next round will be an elimination.
 		if ($board[$x1*7+$y1]['piece_color'] == $color &&
 			$board[$x2*7+$y2]['piece_color'] == $color &&
-			$board[$x3*7+$y3]['piece_color'] == $color)
+			$board[$x3*7+$y3]['piece_color'] == $color &&
+			(($x == $x1 && $y == $y1) ||
+			 ($x == $x2 && $y == $y2) ||
+			 ($x == $x3 && $y == $y3)))
 		{
 			global $mysqli;
 			$st = $mysqli->prepare('update game_status set elimination=1');
@@ -195,6 +202,8 @@ function elimination_check($board, $color) {
 			return;
 		}
 	}
+
+	update_turn();
 }
 
 function can_move($x1, $y1, $x2, $y2) {

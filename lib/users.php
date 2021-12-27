@@ -105,4 +105,15 @@ function can_fly($token) {
 	return False;
 }
 
+function pieces_remaining($token) {
+	global $mysqli;
+	$sql = 'select * from players where token=?';
+	$st = $mysqli->prepare($sql);
+	$st->bind_param('s', $token);
+	$st->execute();
+	$res = $st->get_result();
+	$row = $res->fetch_assoc();
+	return $row['pieces_remaining'];
+}
+
 ?>
