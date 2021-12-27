@@ -11,7 +11,7 @@ insert into board values
 (0,0,null), (0,1,'n'),  (0,2,'n'),  (0,3,null), (0,4,'n'),  (0,5,'n'),  (0,6,null),
 (1,0,'n'),  (1,1,null), (1,2,'n'),  (1,3,null), (1,4,'n'),  (1,5,null), (1,6,'n'),
 (2,0,'n'),  (2,1,'n'),  (2,2,null), (2,3,null), (2,4,null), (2,5,'n'),  (2,6,'n'),
-(3,0,null),  (3,1,null), (3,2,null), (3,3,'n'),  (3,4,null), (3,5,null), (3,6,null),
+(3,0,null), (3,1,null), (3,2,null), (3,3,'n'),  (3,4,null), (3,5,null), (3,6,null),
 (4,0,'n'),  (4,1,'n'),  (4,2,null), (4,3,null), (4,4,null), (4,5,'n'),  (4,6,'n'),
 (5,0,'n'),  (5,1,null), (5,2,'n'),  (5,3,null), (5,4,'n'),  (5,5,null), (5,6,'n'),
 (6,0,null), (6,1,'n'),  (6,2,'n'),  (6,3,null), (6,4,'n'),  (6,5,'n'),  (6,6,null);
@@ -30,7 +30,7 @@ insert into board_empty values
 (0,0,null), (0,1,'n'),  (0,2,'n'),  (0,3,null), (0,4,'n'),  (0,5,'n'),  (0,6,null),
 (1,0,'n'),  (1,1,null), (1,2,'n'),  (1,3,null), (1,4,'n'),  (1,5,null), (1,6,'n'),
 (2,0,'n'),  (2,1,'n'),  (2,2,null), (2,3,null), (2,4,null), (2,5,'n'),  (2,6,'n'),
-(3,0,null),  (3,1,null), (3,2,null), (3,3,'n'),  (3,4,null), (3,5,null), (3,6,null),
+(3,0,null), (3,1,null), (3,2,null), (3,3,'n'),  (3,4,null), (3,5,null), (3,6,null),
 (4,0,'n'),  (4,1,'n'),  (4,2,null), (4,3,null), (4,4,null), (4,5,'n'),  (4,6,'n'),
 (5,0,'n'),  (5,1,null), (5,2,'n'),  (5,3,null), (5,4,'n'),  (5,5,null), (5,6,'n'),
 (6,0,null), (6,1,'n'),  (6,2,'n'),  (6,3,null), (6,4,'n'),  (6,5,'n'),  (6,6,null);
@@ -113,7 +113,7 @@ $$ delimiter;
 
 drop procedure if exists eliminate_piece;
 delimiter $$
-create procedure eliminate_piece(x1 tinyint, y1 tinyint)
+create procedure eliminate_piece(x1 tinyint, y1 tinyint, tok varchar(100))
 begin
 	update board
 	set piece_color=null
@@ -121,5 +121,9 @@ begin
 
 	update game_status
 	set elimination=0;
+
+	update players
+	set pieces_remaining = pieces_remaining - 1
+	where token=tok;
 end
 $$ delimiter;
