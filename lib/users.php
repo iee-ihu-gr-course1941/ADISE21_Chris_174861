@@ -2,17 +2,18 @@
 
 function show_users() {
 	global $mysqli;
-	$sql = 'select username, piece_color from players';
+	$sql = 'select * from players';
 	$st = $mysqli->prepare($sql);
 	$st->execute();
 	$res = $st->get_result();
 	header('Content-type: application/json');
 	print json_encode($res->fetch_all(MYSQLI_ASSOC), JSON_PRETTY_PRINT);
+	print('hello');
 }
 
 function show_user($color) {
 	global $mysqli;
-	$sql = 'select username, piece_color from players where piece_color=?';
+	$sql = 'select * from players where piece_color=?';
 	$st = $mysqli->prepare($sql);
 	$st->bind_param('s',$color);
 	$st->execute();
@@ -76,9 +77,8 @@ function current_color($token) {
 	$st->bind_param('s',$token);
 	$st->execute();
 	$res = $st->get_result();
-	if($row=$res->fetch_assoc())
-		return($row['piece_color']);
-	return(null);
+	$row=$res->fetch_assoc();
+	return($row['piece_color']);
 }
 
 function pieces_placed($token) {
@@ -88,8 +88,21 @@ function pieces_placed($token) {
 	$st->bind_param('s', $token);
 	$st->execute();
 	$res = $st->get_result();
-	if ($row = $res->fetch_assoc())
-		return $row['pieces_placed'];
+	$row = $res->fetch_assoc();
+	return $row['pieces_placed'];
+}
+
+function can_fly($token) {
+	global $mysqli;
+	$sql = 'select can_fly from players where token=?';
+	$st = $mysqli->prepare($sql);
+	$st->bind_param('s', $token);
+	$st->execute();
+	$res = $st->get_result();
+	$row = $res->fetch_assoc();
+	if ($row['can_fly'] == 1)
+		return True;
+	return False;
 }
 
 ?>

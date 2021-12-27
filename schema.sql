@@ -11,7 +11,7 @@ insert into board values
 (0,0,null), (0,1,'n'),  (0,2,'n'),  (0,3,null), (0,4,'n'),  (0,5,'n'),  (0,6,null),
 (1,0,'n'),  (1,1,null), (1,2,'n'),  (1,3,null), (1,4,'n'),  (1,5,null), (1,6,'n'),
 (2,0,'n'),  (2,1,'n'),  (2,2,null), (2,3,null), (2,4,null), (2,5,'n'),  (2,6,'n'),
-(3,0,'n'),  (3,1,null), (3,2,null), (3,3,'n'),  (3,4,null), (3,5,null), (3,6,'n'),
+(3,0,null),  (3,1,null), (3,2,null), (3,3,'n'),  (3,4,null), (3,5,null), (3,6,null),
 (4,0,'n'),  (4,1,'n'),  (4,2,null), (4,3,null), (4,4,null), (4,5,'n'),  (4,6,'n'),
 (5,0,'n'),  (5,1,null), (5,2,'n'),  (5,3,null), (5,4,'n'),  (5,5,null), (5,6,'n'),
 (6,0,null), (6,1,'n'),  (6,2,'n'),  (6,3,null), (6,4,'n'),  (6,5,'n'),  (6,6,null);
@@ -30,7 +30,7 @@ insert into board_empty values
 (0,0,null), (0,1,'n'),  (0,2,'n'),  (0,3,null), (0,4,'n'),  (0,5,'n'),  (0,6,null),
 (1,0,'n'),  (1,1,null), (1,2,'n'),  (1,3,null), (1,4,'n'),  (1,5,null), (1,6,'n'),
 (2,0,'n'),  (2,1,'n'),  (2,2,null), (2,3,null), (2,4,null), (2,5,'n'),  (2,6,'n'),
-(3,0,'n'),  (3,1,null), (3,2,null), (3,3,'n'),  (3,4,null), (3,5,null), (3,6,'n'),
+(3,0,null),  (3,1,null), (3,2,null), (3,3,'n'),  (3,4,null), (3,5,null), (3,6,null),
 (4,0,'n'),  (4,1,'n'),  (4,2,null), (4,3,null), (4,4,null), (4,5,'n'),  (4,6,'n'),
 (5,0,'n'),  (5,1,null), (5,2,'n'),  (5,3,null), (5,4,'n'),  (5,5,null), (5,6,'n'),
 (6,0,null), (6,1,'n'),  (6,2,'n'),  (6,3,null), (6,4,'n'),  (6,5,'n'),  (6,6,null);
@@ -55,13 +55,14 @@ create table players (
 	piece_color enum('b','w') not null,
 	pieces_placed tinyint(1) not null,
 	pieces_remaining tinyint(1) not null,
+	can_fly tinyint(1) not null,
 	token varchar(100) default null,
 	last_action timestamp null default null,
 	primary key (piece_color)
 ) engine=InnoDB default charset=utf8;
 
 lock tables players write;
-insert into players values (null,'b',0,9,null,null), (null,'w',0,9,null,null);
+insert into players values (null,'b',0,9,0,null,null), (null,'w',0,9,0,null,null);
 unlock tables;
 
 drop procedure if exists clean_board;

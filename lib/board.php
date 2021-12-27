@@ -70,17 +70,26 @@ function handle_piece_impl($input) {
 	if ($input['piece'] == 'place') place_piece($input);
 	else if ($input['piece'] == 'move') move_piece($input);
 	else if ($input['piece'] == 'eliminate') eliminate_piece($input);
+	else bad_request('Choose an action, such as piece place, piece eliminate etc');
 }
 
 function move_piece($input) {
 	$board = get_board();
-	$x1 = $input('x1');
-	$y1 = $input('y1');
-	$x2 = $input('x2');
-	$y2 = $input('y2');
-	// TODO check for validity of x1 through y2
 
+	$x1 = $input['x1'];
+	$y1 = $input['y1'];
+	$x2 = $input['x2'];
+	$y2 = $input['y2'];
+	if ($x1 == null || $y1 == null || $x2 == null || $y2 == null) bad_request("No positions x1,y1,x2,y2 provided");
+
+	// Check if a piece is placed at x2,y2 or if no piece is allowed to be placed (designated by 'n' as in none)
 	if ($board[$x2*7+$y2]['piece_color'] != null) bad_request("Invalid position to move to");
+	// Check if piece at position x1,y1 is ours
+	if ($board[$x1*7+$y1]['piece_color'] != current_color($input['token'])) bad_request("Not your piece to move or there is no piece at this position to move");
+
+	$token = $input['token'];
+	if (! can_fly($token))
+		if (! can_move($x1, $y1, $x2, $y2)) bad_request("You can't move there");
 
 	global $mysqli;
 	$sql = 'call move_piece(?,?,?,?)';
@@ -113,18 +122,35 @@ function place_piece($input) {
 }
 
 function eliminate_piece($input) {
-	$other_color = (current_color($input['token']) == 'w') ? 'b' : 'w';
+	$color = current_color($input['token']);
+	$other_color = $color == 'w' ? 'b' : 'w';
 
 	$x = $input['x'];
 	$y = $input['y'];
 	if ($x == null || $y == null) bad_request("No positions x & y provided");
+	// Check if a piece other than the opponent's color is placed at x,y
 	if (get_board()[$x*7+$y]['piece_color'] != $other_color) bad_request("Invalid position to eliminate");
 
 	global $mysqli;
-	$sql = 'call eliminate_piece(?, ?)';
+	$sql = 'call eliminate_piece(?,?)';
 	$st = $mysqli->prepare($sql);
 	$st->bind_param('ii', $x, $y);
 	$st->execute();
+
+	// If the opponent has only three pieces remaining, then the opponent can fly
+	if (show_user($other_color)['pieces_remaining'] == 3) {
+		$sql = "update players set can_fly=1 where token=?";
+		$st = $mysqli->prepare($sql);
+		$st->bind_param('s', $input['token']);
+		$st->execute();
+	}
+	// If the opponent has only two pieces remaining the game ends
+	if (show_user($other_color)['pieces_remaining'] == 2) {
+		$sql = "update game_status set status='not_active', result=?, player_turn=null";
+		$st = $mysqli->prepare($sql);
+		$st->bind_param('s', $color);
+		$st->execute();
+	}
 }
 
 function elimination_check($board, $color) {
@@ -169,8 +195,45 @@ function elimination_check($board, $color) {
 			return;
 		}
 	}
+}
 
-	//update_turn();
+function can_move($x1, $y1, $x2, $y2) {
+	$legal_moves = array(
+		"00"=>[[3,0],[0,3]],
+		"03"=>[[0,0],[0,6],[1,3]],
+		"06"=>[[3,6],[0,3]],
+
+		"11"=>[[3,1],[1,3]],
+		"13"=>[[0,3],[1,1],[2,3],[1,5]],
+		"15"=>[[1,3],[3,5]],
+
+		"22"=>[[2,3],[3,2]],
+		"23"=>[[2,2],[1,3],[2,4]],
+		"24"=>[[2,3],[3,4]],
+
+		"30"=>[[0,0],[6,0],[3,1]],
+		"31"=>[[3,0],[1,1],[3,2],[5,1]],
+		"32"=>[[2,2],[3,1],[4,2]],
+		"34"=>[[2,4],[4,4],[3,5]],
+		"35"=>[[3,4],[1,5],[3,6],[5,5]],
+		"36"=>[[0,6],[3,5],[6,6]],
+
+		"42"=>[[3,2],[4,3]],
+		"43"=>[[4,2],[5,3],[4,4]],
+		"44"=>[[4,3],[3,4]],
+
+		"51"=>[[3,1],[5,3]],
+		"53"=>[[4,3],[5,1],[5,5],[6,3]],
+		"55"=>[[5,3],[3,5]],
+
+		"60"=>[[3,0],[6,3]],
+		"63"=>[[6,0],[5,3],[6,6]],
+		"66"=>[[6,3],[3,6]]
+	);
+
+	$key = strval($x1).strval($y1);
+	$value = [$x2, $y2];
+	return in_array($value, $legal_moves[$key]);
 }
 
 ?>
