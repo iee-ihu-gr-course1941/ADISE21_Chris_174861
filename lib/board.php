@@ -131,7 +131,7 @@ function eliminate_piece($input) {
 	global $mysqli;
 	$sql = 'call eliminate_piece(?,?,?)';
 	$st = $mysqli->prepare($sql);
-	$st->bind_param('iis', $x, $y, $input['token']);
+	$st->bind_param('iis', $x, $y, $other_color);
 	$st->execute();
 
 	// If the opponent has only three pieces remaining, then the opponent can fly

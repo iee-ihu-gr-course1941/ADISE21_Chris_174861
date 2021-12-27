@@ -113,7 +113,7 @@ $$ delimiter;
 
 drop procedure if exists eliminate_piece;
 delimiter $$
-create procedure eliminate_piece(x1 tinyint, y1 tinyint, tok varchar(100))
+create procedure eliminate_piece(x1 tinyint, y1 tinyint, color char)
 begin
 	update board
 	set piece_color=null
@@ -124,6 +124,6 @@ begin
 
 	update players
 	set pieces_remaining = pieces_remaining - 1
-	where token=tok;
+	where piece_color=color;
 end
 $$ delimiter;
