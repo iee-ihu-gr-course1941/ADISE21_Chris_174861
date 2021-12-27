@@ -135,14 +135,14 @@ function eliminate_piece($input) {
 	$st->execute();
 
 	// If the opponent has only three pieces remaining, then the opponent can fly
-	if (pieces_remaining($token) == 3) {
-		$sql = "update players set can_fly=1 where token=?";
+	if (pieces_remaining($other_color) == 3) {
+		$sql = "update players set can_fly=1 where piece_color=?";
 		$st = $mysqli->prepare($sql);
-		$st->bind_param('s', $input['token']);
+		$st->bind_param('s', $other_color);
 		$st->execute();
 	}
 	// If the opponent has only two pieces remaining the game ends
-	else if (pieces_remaining($token) == 2) {
+	else if (pieces_remaining($other_color) == 2) {
 		$sql = "update game_status set status='ended', result=?, player_turn=null";
 		$st = $mysqli->prepare($sql);
 		$st->bind_param('s', $color);
