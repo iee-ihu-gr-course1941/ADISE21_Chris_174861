@@ -127,3 +127,14 @@ begin
 	where piece_color=color;
 end
 $$ delimiter;
+
+drop procedure if exists reset_game;
+delimiter $$
+create procedure reset_game()
+begin
+	update game_status set
+	status='not_active', player_turn=null, elimination=0, result=null, last_change='2022-12-20 20:00:00';
+
+	update players set username=null, pieces_placed=0, pieces_remaining=9, can_fly=0, token=null, last_action=null;
+end
+$$ delimiter;

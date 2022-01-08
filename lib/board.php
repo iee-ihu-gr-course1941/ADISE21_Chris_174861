@@ -70,7 +70,7 @@ function handle_piece_impl($input) {
 	if ($status['status'] != 'started') bad_request("Game is not in action");
 	if ($status['player_turn'] != $color) bad_request("It is not your turn");
 	if ($status['elimination'] == 1) eliminate_piece($input);
-	else if (pieces_placed($token) != 9) place_piece($input);
+	elseif (pieces_placed($token) != 9) place_piece($input);
 	else move_piece($input);
 }
 
