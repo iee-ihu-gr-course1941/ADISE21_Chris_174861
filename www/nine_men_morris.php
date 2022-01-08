@@ -49,17 +49,17 @@ switch ($r=array_shift($request)) {
 
 function handle_board($method, $input) {
 	if($method=='GET')
-		show_board($input);
+		show_board();
 	else if ($method=='POST') {
 		reset_board();
-		show_board($input);
+		show_board();
 	}
 	else
 		header('HTTP/1.1 405 Method Not Allowed');
 }
 
 function handle_piece($method, $input) {
-	if ($method == "GET") show_piece($x,$y);
+	if ($method == "GET") show_piece($input);
 	else if ($method == "PUT") handle_piece_impl($input);
 }
 

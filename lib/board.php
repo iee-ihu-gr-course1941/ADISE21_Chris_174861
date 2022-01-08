@@ -42,8 +42,12 @@ function reset_board() {
 	$mysqli->query('call clean_board()');
 }
 
-function show_piece($x,$y) {
+function show_piece($input) {
 	global $mysqli;
+
+	$x = $input['x'];
+	$y = $input['y'];
+	if ($x == null || $y == null) bad_request("Choose x and y coords of piece to show");
 	
 	$sql = 'select * from board where x=? and y=?';
 	$st = $mysqli->prepare($sql);
