@@ -1,6 +1,3 @@
-# Nine men's morris
-Nine men's morris is a strategy board game for two players dating at least to the Roman Empire.  
-You can access the api from this link:
 
 ## Rules
 The game proceeds in three phases:
@@ -61,4 +58,9 @@ curl -X GET 'local/Project/www/nine_men_morris.php/players'
 Show selected user info:
 ```bash
 curl -X GET 'local/Project/www/nine_men_morris.php/players/color'
+```
+
+Reset game:
+```bash
+curl -X POST 'local/Project/www/nine_men_morris.php/players/reset'
 ```
