@@ -1,4 +1,8 @@
 
+# Nine men's morris
+Nine men's morris is a strategy board game for two players dating at least to the Roman Empire.
+You can access its api from here: https://users.it.teithe.gr/~it174861/ADISE21_Chris_174861/www/nine_men_morris.php
+
 ## Rules
 The game proceeds in three phases:
 
