@@ -28,16 +28,25 @@ curl -X POST 'https://users.it.teithe.gr/~it174861/ADISE21_Chris_174861/www/nine
 
 Show info about a piece:
 ```bash
-curl -X GET -H 'Content-Type: application/json' -d '{"x":"x", "y":"y"}' 'https://users.it.teithe.gr/~it174861/ADISE21_Chris_174861/www/nine_men_morris.php/board/piece'
+curl -X GET \
+	 -H 'Content-Type: application/json' \
+	 -d '{"x":"x", "y":"y"}' \
+	 'https://users.it.teithe.gr/~it174861/ADISE21_Chris_174861/www/nine_men_morris.php/board/piece'
 ```
 Place or move piece (this will depend on how many pieces you have remaining):  
 1. When placing a piece:
 ```bash
-curl -X PUT -H 'Content-Type: application/json' -d '{"token":"your_token", "x":"x", "y":"y"}' 'https://users.it.teithe.gr/~it174861/ADISE21_Chris_174861/www/nine_men_morris.php/board/piece'
+curl -X PUT \
+	 -H 'Content-Type: application/json' \
+	 -d '{"token":"your_token", "x":"x", "y":"y"}' \
+	 'https://users.it.teithe.gr/~it174861/ADISE21_Chris_174861/www/nine_men_morris.php/board/piece'
 ```
 2. When moving a piece:
 ```bash
-curl -X PUT -H 'Content-Type: application/json' -d '{"token":"your_token", "x1":"x1", "y1":"y1", "x2":"x2", "y2":"y2"}' 'https://users.it.teithe.gr/~it174861/ADISE21_Chris_174861/www/nine_men_morris.php/board/piece'
+curl -X PUT \
+	 -H 'Content-Type: application/json' \
+	 -d '{"token":"your_token", "x1":"x1", "y1":"y1", "x2":"x2", "y2":"y2"}' \
+	 'https://users.it.teithe.gr/~it174861/ADISE21_Chris_174861/www/nine_men_morris.php/board/piece'
 ```
 
 Show status:
@@ -47,7 +56,10 @@ curl -X GET 'https://users.it.teithe.gr/~it174861/ADISE21_Chris_174861/www/nine_
 
 Choose color and username:
 ```bash
-curl -X PUT -H 'Content-Type: application/json' -d '{"username":"name"}' 'https://users.it.teithe.gr/~it174861/ADISE21_Chris_174861/www/nine_men_morris.php/players/color'
+curl -X PUT \
+	 -H 'Content-Type: application/json' \
+	 -d '{"username":"name"}' \
+	 'https://users.it.teithe.gr/~it174861/ADISE21_Chris_174861/www/nine_men_morris.php/players/color'
 ```
 
 Show all user info:
