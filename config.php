@@ -1,4 +1,4 @@
 <?php
 	$DB_USER = 'nine_men';
-    $DB_PASS = '12345';
+    $DB_PASS = '?o]E~[Enr/pTw7/!H:';
 ?>
