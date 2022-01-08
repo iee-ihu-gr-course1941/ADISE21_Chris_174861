@@ -1,13 +1,12 @@
 <?php
-$host="users.iee.ihu.gr";
+$host="localhost";
 $db = "nine_men_morris";
 require_once "../config.php";
 
 $user=$DB_USER;
 $pass=$DB_PASS;
 
-print(gethostname());
-if(gethostname() == "users.iee.ihu.gr")
+if(gethostname() == "users.iee.ihu.gr") 
 	$mysqli = new mysqli($host, $user, $pass, $db, null, "/home/student/it/2017/it174861/mysql/run/mysql.sock");
 else
 	$mysqli = new mysqli($host, $user, null, $db);
