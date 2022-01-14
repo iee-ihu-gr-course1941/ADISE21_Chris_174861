@@ -78,5 +78,5 @@ curl -X GET 'https://users.it.teithe.gr/~it174861/ADISE21_Chris_174861/www/nine_
 
 Reset game:
 ```bash
-curl -X POST 'https://users.it.teithe.gr/~it174861/ADISE21_Chris_174861/www/nine_men_morris.php/players/reset'
+curl -X POST 'https://users.it.teithe.gr/~it174861/ADISE21_Chris_174861/www/nine_men_morris.php/reset'
 ```
