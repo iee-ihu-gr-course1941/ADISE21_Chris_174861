@@ -38,7 +38,7 @@ curl -X GET \
 	 'https://users.it.teithe.gr/~it174861/ADISE21_Chris_174861/www/nine_men_morris.php/board/piece'
 ```
 Place or move piece (this will depend on how many pieces you have remaining):  
-1. When placing a piece:
+1. When placing a piece (Used for elimination too):
 ```bash
 curl -X PUT \
 	 -H 'Content-Type: application/json' \
